@@ -10,7 +10,7 @@ module LslTools
 		duration = diff(stream_main["time"][[1,end]])[1]
 		srate_eff = n_samples/duration
 		factor = srate_eff/stream_main["srate"]
-		@info @sprintf("changing effective sampling rate from %.2f to %.2f, factor %.2f",srate_eff,stream_main["srate"],factor)
+		@info @sprintf("changing effective sampling rate from %.4f to %.4f, factor %.4f",srate_eff,stream_main["srate"],factor)
 		for k = values(streams)
 			k["time"] = k["time"] .* factor
 		end
@@ -64,7 +64,7 @@ module LslTools
 		coef = dejitter_coef(stream_main)
 		stream_main["time"] = coef[1] .+ coef[2] .* (1:length(stream_main["time"]))
 		
-		return stream_main
+		return streams
 	end
 
 	# Calculate linear coefficient for jitter-correction of regular sampled EEG
@@ -73,9 +73,7 @@ module LslTools
 		if ismissing(samples)
 			samples = 1:nsamp
 		end
-		ix = 1:10000
-		coef = [ones(nsamp)[ix] samples[ix]] \ stream_main["time"][ix]
-		
+		coef = [ones(nsamp) samples] \ stream_main["time"]
 		return coef
 	end
 
